@@ -10,7 +10,7 @@ const PERSON_SELECT = "name email";
  * @desc    Add an expense to a group. Supports two split types:
  *          - "equal": amount is divided evenly across the given participants
  *            (or the whole group if none are specified), with any leftover
- *            cent(s) from rounding assigned to the last participant.
+ *            rupees from rounding assigned to the last participant.
  *          - "custom": caller supplies the exact splits, which must sum to
  *            the total amount.
  * @route   POST /api/groups/:groupId/expenses
@@ -18,13 +18,13 @@ const PERSON_SELECT = "name email";
  */
 export const addExpense = async (req, res) => {
   try {
-    const { groupId } = req.params;
+    const {groupId} = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(groupId)) {
       return res.status(400).json({ message: "Invalid group id" });
     }
 
-    const group = await Group.findById(groupId);
+    const group=await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({ message: "Group not found" });
     }
@@ -76,7 +76,7 @@ export const addExpense = async (req, res) => {
         return res.status(400).json({ message: "At least one participant is required" });
       }
 
-      // Work in integer cents to avoid floating point drift, then give any
+      // Work in integer rupees to avoid floating point drift, then give any
       // leftover cent(s) from the division to the last participant.
       const totalCents     = Math.round(amount * 100);
       const baseCents      = Math.floor(totalCents / n);
@@ -136,8 +136,8 @@ export const addExpense = async (req, res) => {
       description: description.trim(),
       amount,
       paidBy,
-      addedBy:     req.userId,   // always the currently authenticated user
-      splits:      finalSplits,
+      addedBy:  req.userId,   // always the currently authenticated user
+      splits:   finalSplits,
       splitType,
     });
 
@@ -195,7 +195,7 @@ export const getGroupExpenses = async (req, res) => {
  * @desc    Delete a single expense. Only the group member who originally
  *          logged the expense (addedBy) may delete it. Balances are
  *          recalculated automatically on the next balance fetch since they
- *          are derived — no extra work needed here.
+ *          are derived —no extra work.
  * @route   DELETE /api/groups/:groupId/expenses/:expenseId
  * @access  Private (addedBy only)
  */
